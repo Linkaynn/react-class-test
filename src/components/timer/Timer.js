@@ -1,9 +1,8 @@
 import React from "react";
 import "./Timer.scss";
 
-function formatDigit(text, zeros) {
+export function formatDigit(text, zeros) {
   let formatted = "0000";
-
   return (formatted + text.toString()).substr(-(zeros + 1));
 }
 
@@ -14,10 +13,18 @@ const startState = {
   hasEnded: false
 };
 
+const endState = {
+  isOn: false,
+  time: 0,
+  hasEnded: true
+};
+
 class Timer extends React.Component {
   constructor(props) {
     super(props);
     this.state = startState;
+
+    this.onTimerChange = props.onTimerChange;
 
     this.startTimer = this.startTimer.bind(this);
     this.pauseTimer = this.pauseTimer.bind(this);
@@ -32,21 +39,25 @@ class Timer extends React.Component {
 
     this.timer && clearInterval(this.timer);
 
-    this.timer = setInterval(() => {
-      if (this.state.time <= 0) {
-        this.setState({
-          isOn: false,
-          time: 0,
-          hasEnded: true
-        });
-        clearInterval(this.timer);
-      } else {
-        this.setState({
-          isOn: true,
-          time: startState.time - (Date.now() - this.state.start)
-        });
-      }
-    }, 1);
+    this.timer = setInterval(() => this.tick(), 1);
+  }
+
+  tick() {
+    if (this.timerEnded()) {
+      this.setState(endState);
+      clearInterval(this.timer);
+    } else {
+      this.setState({
+        isOn: true,
+        time: startState.time - (Date.now() - this.state.start)
+      });
+    }
+
+    this.onTimerChange(this.state.time);
+  }
+
+  timerEnded() {
+    return this.state.time <= 0;
   }
 
   pauseTimer() {
@@ -99,6 +110,6 @@ class Timer extends React.Component {
       </div>
     );
   }
-}
+npm}
 
 export default Timer;
