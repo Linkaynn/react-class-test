@@ -1,7 +1,9 @@
 import React from "react";
 import "./Timer.scss";
+import store from "../../redux/store/store";
+import { setTimeAction } from "../../redux/actions/actions";
 
-function formatDigit(text, zeros) {
+export function formatDigit(text, zeros) {
   let formatted = "0000";
 
   return (formatted + text.toString()).substr(-(zeros + 1));
@@ -12,6 +14,12 @@ const startState = {
   start: 0,
   isOn: false,
   hasEnded: false
+};
+
+const endState = {
+  isOn: false,
+  time: 0,
+  hasEnded: true
 };
 
 class Timer extends React.Component {
@@ -32,21 +40,25 @@ class Timer extends React.Component {
 
     this.timer && clearInterval(this.timer);
 
-    this.timer = setInterval(() => {
-      if (this.state.time <= 0) {
-        this.setState({
-          isOn: false,
-          time: 0,
-          hasEnded: true
-        });
-        clearInterval(this.timer);
-      } else {
-        this.setState({
-          isOn: true,
-          time: startState.time - (Date.now() - this.state.start)
-        });
-      }
-    }, 1);
+    this.timer = setInterval(() => this.tick(), 1);
+  }
+
+  tick() {
+    if (this.timerEnded()) {
+      this.setState(endState);
+      clearInterval(this.timer);
+    } else {
+      this.setState({
+        isOn: true,
+        time: startState.time - (Date.now() - this.state.start)
+      });
+    }
+
+    store.dispatch(setTimeAction(this.state.time));
+  }
+
+  timerEnded() {
+    return this.state.time <= 0;
   }
 
   pauseTimer() {
