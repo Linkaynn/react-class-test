@@ -11,15 +11,11 @@ class BinaryRepresentation extends React.Component {
   constructor(props) {
     super(props);
 
-    if (isNumber(props.time)) {
-      this.state = {
-        representation: toBinaryRepresentation(props.time)
+    this.state = {
+        representation: isNumber(props.time)
+          ? toBinaryRepresentation(props.time)
+          : toBinaryRepresentation(60)
       };
-    } else {
-      this.state = {
-        representation: toBinaryRepresentation(60)
-      };
-    }
   }
 
   componentWillReceiveProps(nextProps) {

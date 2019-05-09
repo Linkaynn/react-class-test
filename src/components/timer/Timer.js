@@ -27,7 +27,7 @@ class Timer extends React.Component {
     this.onTimerChange = props.onTimerChange;
 
     this.startTimer = this.startTimer.bind(this);
-    this.pauseTimer = this.pauseTimer.bind(this);
+    this.stopTimer = this.stopTimer.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
   }
 
@@ -37,7 +37,7 @@ class Timer extends React.Component {
       start: Date.now()
     });
 
-    this.timer && clearInterval(this.timer);
+    clearInterval(this.timer);
 
     this.timer = setInterval(() => this.tick(), 1);
   }
@@ -60,7 +60,7 @@ class Timer extends React.Component {
     return this.state.time <= 0;
   }
 
-  pauseTimer() {
+  stopTimer() {
     this.setState({
       time: startState.time,
       isOn: false
@@ -69,7 +69,7 @@ class Timer extends React.Component {
   }
 
   resetTimer() {
-    this.timer && clearInterval(this.timer);
+    clearInterval(this.timer);
     this.setState({
       time: startState.time,
       isOn: false,
@@ -84,21 +84,17 @@ class Timer extends React.Component {
   render() {
     return (
       <div>
-        {this.state.hasEnded ? (
-          <h2 className="time-up"> Time up! </h2>
-        ) : (
-          <h2>
-            {formatDigit(Math.floor(this.state.time / 1000), 1)} : {formatDigit(this.state.time.toString().substr(-3), 2)}
-          </h2>
-        )}
-        {this.state.hasEnded ? null : !this.state.isOn ? (
-          <i
-            className="fas fa-play icon start-icon"
-            onClick={this.startTimer}
-          />
-        ) : (
-          <i className="fas fa-stop icon stop-icon" onClick={this.pauseTimer} />
-        )}
+        {this.state.hasEnded ? 
+        <h2 className="time-up"> Time up! </h2>
+         : 
+        <h2>{formatDigit(Math.floor(this.state.time / 1000), 1)} : {formatDigit(this.state.time.toString().substr(-3), 2)}</h2>
+        }
+
+        {this.state.hasEnded ? null : !this.state.isOn ?
+          <i className="fas fa-play icon start-icon" onClick={this.startTimer}/>
+         :
+          <i className="fas fa-stop icon stop-icon" onClick={this.stopTimer} />
+        }
         <i
           className={
             this.state.hasEnded
@@ -110,6 +106,6 @@ class Timer extends React.Component {
       </div>
     );
   }
-npm}
+}
 
 export default Timer;
